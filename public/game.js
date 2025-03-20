@@ -13,7 +13,7 @@ let weapon = { x: 500, y: 500, isEquipped: false };
 
 // Load custom character image
 const playerImage = new Image();
-playerImage.src = 'https://raw.githubusercontent.com/your-username/your-repo/main/player.png'; // Replace with your RawGitHub link
+playerImage.src = 'https://raw.githubusercontent.com/dawg4405/my-game-assets/refs/heads/main/player.png'; // Replace with your RawGitHub link
 
 // Handle initial game state
 socket.on('currentPlayers', (data) => {
