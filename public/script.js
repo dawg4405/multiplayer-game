@@ -2,6 +2,10 @@ const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const coordinatesDisplay = document.getElementById('coordinates');
 
+// Set canvas size
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
 // Connect to the server
 const socket = io();
 
