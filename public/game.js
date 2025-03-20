@@ -20,6 +20,7 @@ socket.on('currentPlayers', (data) => {
   players = data.players;
   weapon = data.weapon;
   myId = socket.id;
+  console.log("Current players:", players); // Debugging
 });
 
 // Handle new players
@@ -101,22 +102,26 @@ canvas.addEventListener('click', (e) => {
 function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  // Calculate camera offset to center the player
+  const cameraX = players[myId].x - canvas.width / 2;
+  const cameraY = players[myId].y - canvas.height / 2;
+
   // Draw players
   Object.values(players).forEach((player) => {
     // Draw player
-    ctx.drawImage(playerImage, player.x, player.y, 10, 10);
+    ctx.drawImage(playerImage, player.x - cameraX, player.y - cameraY, 10, 10);
 
     // Draw health bar
     ctx.fillStyle = 'red';
-    ctx.fillRect(player.x, player.y - 10, 40, 5);
+    ctx.fillRect(player.x - cameraX, player.y - cameraY - 10, 40, 5);
     ctx.fillStyle = 'lime';
-    ctx.fillRect(player.x, player.y - 10, (player.health / 100) * 40, 5);
+    ctx.fillRect(player.x - cameraX, player.y - cameraY - 10, (player.health / 100) * 40, 5);
   });
 
   // Draw weapon
   if (!weapon.isEquipped) {
     ctx.fillStyle = 'yellow';
-    ctx.fillRect(weapon.x, weapon.y, 10, 10);
+    ctx.fillRect(weapon.x - cameraX, weapon.y - cameraY, 10, 10);
   }
 
   // Update coordinates display
