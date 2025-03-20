@@ -12,7 +12,6 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Game state
 const players = {};
-const weapon = { x: 500, y: 500, isEquipped: false };
 
 // Socket.io connection
 io.on('connection', (socket) => {
@@ -20,14 +19,13 @@ io.on('connection', (socket) => {
 
   // Add new player to the game
   players[socket.id] = {
-    x: Math.floor(Math.random() * 2400),
-    y: Math.floor(Math.random() * 1600),
+    x: Math.floor(Math.random() * 100),
+    y: Math.floor(Math.random() * 100),
     health: 100,
-    isEquipped: false,
   };
 
   // Send current game state to the new player
-  socket.emit('currentPlayers', { players, weapon });
+  socket.emit('currentPlayers', { players });
 
   // Notify other players about the new player
   socket.broadcast.emit('newPlayer', players[socket.id]);
@@ -37,20 +35,6 @@ io.on('connection', (socket) => {
     if (players[socket.id]) {
       players[socket.id].x = movement.x;
       players[socket.id].y = movement.y;
-
-      // Check for weapon pickup
-      if (
-        !players[socket.id].isEquipped &&
-        players[socket.id].x < weapon.x + 10 &&
-        players[socket.id].x + 10 > weapon.x &&
-        players[socket.id].y < weapon.y + 10 &&
-        players[socket.id].y + 10 > weapon.y
-      ) {
-        players[socket.id].isEquipped = true;
-        weapon.isEquipped = true;
-        io.emit('weaponEquipped', { id: socket.id });
-      }
-
       // Broadcast updated position to all players
       socket.broadcast.emit('playerMoved', {
         id: socket.id,
@@ -65,17 +49,15 @@ io.on('connection', (socket) => {
     const shooter = players[socket.id];
     const targetPlayer = Object.values(players).find(
       (player) =>
-        player.x <= target.x + 10 &&
-        player.x + 10 >= target.x &&
-        player.y <= target.y + 10 &&
-        player.y + 10 >= target.y
+        player.x === target.x && player.y === target.y
     );
 
     if (targetPlayer && targetPlayer.health > 0) {
-      targetPlayer.health -= 4; // Reduce health by 4 ticks
+      targetPlayer.health -= 10; // Reduce health by 10 ticks
       if (targetPlayer.health <= 0) {
-        targetPlayer.health = 0;
-        console.log(`Player ${socket.id} was defeated!`);
+        targetPlayer.health = 100; // Respawn
+        targetPlayer.x = Math.floor(Math.random() * 100);
+        targetPlayer.y = Math.floor(Math.random() * 100);
       }
       // Broadcast updated health to all players
       io.emit('playerHealthUpdate', {
