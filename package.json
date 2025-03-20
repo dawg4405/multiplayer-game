@@ -1,7 +1,7 @@
 {
-  "name": "multiplayer-game",
+  "name": "2d-multiplayer-game",
   "version": "1.0.0",
-  "description": "A simple multiplayer game",
+  "description": "A 2D multiplayer game with a large map and shooting mechanics.",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
