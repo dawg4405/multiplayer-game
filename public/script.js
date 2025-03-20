@@ -18,11 +18,15 @@ const squareSize = 40; // Each square is 40x40 pixels
 // Load custom character image
 const playerImage = new Image();
 playerImage.src = 'https://raw.githubusercontent.com/dawg4405/my-game-assets/refs/heads/main/player.png'; // Replace with your RawGitHub link
+playerImage.onload = () => {
+  console.log("Player image loaded successfully");
+};
 
 // Handle initial game state
 socket.on('currentPlayers', (data) => {
   players = data.players;
   myId = socket.id;
+  console.log("Current players:", players); // Debugging
 });
 
 // Handle new players
