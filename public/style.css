@@ -1,0 +1,22 @@
+body {
+  margin: 0;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background-color: #333;
+}
+
+canvas {
+  border: 2px solid #fff;
+  background-color: #000;
+}
+
+#coordinates {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  color: white;
+  font-family: Arial, sans-serif;
+}
