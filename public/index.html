@@ -3,42 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Multiplayer Game</title>
-  <style>
-    body {
-      margin: 0;
-      overflow: hidden;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      background-color: #333;
-    }
-    canvas {
-      border: 2px solid #fff;
-      background-color: #000;
-    }
-    #coordinates {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-    #playerCount {
-      position: absolute;
-      top: 10px;
-      left: 10px;
-      color: white;
-      font-family: Arial, sans-serif;
-    }
-  </style>
+  <title>2D Multiplayer Game</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <canvas id="gameCanvas" width="1200" height="800"></canvas>
+  <canvas id="gameCanvas"></canvas>
   <div id="coordinates">X: 0, Y: 0</div>
-  <div id="playerCount">Players: 1</div>
   <script src="/socket.io/socket.io.js"></script>
-  <script src="game.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
