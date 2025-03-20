@@ -22,28 +22,38 @@ function lerp(start, end, speed) {
 
 // Render Grid and Players
 function renderViewport() {
-  const offsetX = (viewportWidth / 2) - player.x * tileSize;
-  const offsetY = (viewportHeight / 2) - player.y * tileSize;
+  const offsetX = viewportWidth / 2 - player.x * tileSize;
+  const offsetY = viewportHeight / 2 - player.y * tileSize;
 
   ctx.clearRect(0, 0, viewportWidth, viewportHeight);
 
-  // Draw Grid (visible area only)
+  // Draw Grid (always visible)
   const startX = Math.floor((player.x - viewportWidth / (2 * tileSize)) / tileSize);
   const startY = Math.floor((player.y - viewportHeight / (2 * tileSize)) / tileSize);
   const endX = Math.ceil((player.x + viewportWidth / (2 * tileSize)) / tileSize);
   const endY = Math.ceil((player.y + viewportHeight / (2 * tileSize)) / tileSize);
 
+  ctx.strokeStyle = '#ccc'; // Grid color
   for (let x = startX; x < endX; x++) {
     for (let y = startY; y < endY; y++) {
-      ctx.strokeStyle = '#ccc';
-      ctx.strokeRect(x * tileSize + offsetX, y * tileSize + offsetY, tileSize, tileSize);
+      ctx.strokeRect(
+        x * tileSize + offsetX,
+        y * tileSize + offsetY,
+        tileSize,
+        tileSize
+      );
     }
   }
 
   // Draw Weapons
   weapons.forEach(weapon => {
     ctx.fillStyle = 'red';
-    ctx.fillRect(weapon.x * tileSize + offsetX, weapon.y * tileSize + offsetY, tileSize / 2, tileSize / 2);
+    ctx.fillRect(
+      weapon.x * tileSize + offsetX,
+      weapon.y * tileSize + offsetY,
+      tileSize / 2,
+      tileSize / 2
+    );
   });
 
   // Draw Local Player
