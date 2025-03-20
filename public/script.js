@@ -1,7 +1,6 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 const coordinatesDisplay = document.getElementById('coordinates');
-const playerCountDisplay = document.getElementById('playerCount');
 
 // Connect to the server
 const socket = io();
@@ -9,7 +8,8 @@ const socket = io();
 // Game state
 let players = {};
 let myId;
-let weapon = { x: 500, y: 500, isEquipped: false };
+const gridSize = 100; // 100x100 grid
+const squareSize = 40; // Each square is 40x40 pixels
 
 // Load custom character image
 const playerImage = new Image();
@@ -18,27 +18,18 @@ playerImage.src = 'https://raw.githubusercontent.com/dawg4405/my-game-assets/ref
 // Handle initial game state
 socket.on('currentPlayers', (data) => {
   players = data.players;
-  weapon = data.weapon;
   myId = socket.id;
-  console.log("Current players:", players); // Debugging
 });
 
 // Handle new players
 socket.on('newPlayer', (newPlayer) => {
   players[newPlayer.id] = newPlayer;
-  updatePlayerCount();
 });
 
 // Handle player movement
 socket.on('playerMoved', (playerData) => {
   players[playerData.id].x = playerData.x;
   players[playerData.id].y = playerData.y;
-});
-
-// Handle weapon pickup
-socket.on('weaponEquipped', (data) => {
-  players[data.id].isEquipped = true;
-  weapon.isEquipped = true;
 });
 
 // Handle player health updates
@@ -49,13 +40,7 @@ socket.on('playerHealthUpdate', (playerData) => {
 // Handle player disconnection
 socket.on('playerDisconnected', (playerId) => {
   delete players[playerId];
-  updatePlayerCount();
 });
-
-// Update player count
-function updatePlayerCount() {
-  playerCountDisplay.textContent = `Players: ${Object.keys(players).length}`;
-}
 
 // Movement keys
 const keys = {
@@ -78,10 +63,10 @@ window.addEventListener('keyup', (e) => {
 function updatePlayer() {
   const moveAmount = keys.Shift ? 5 : 1;
 
-  if (keys.w) players[myId].y -= moveAmount;
-  if (keys.a) players[myId].x -= moveAmount;
-  if (keys.s) players[myId].y += moveAmount;
-  if (keys.d) players[myId].x += moveAmount;
+  if (keys.w && players[myId].y > 0) players[myId].y -= moveAmount;
+  if (keys.a && players[myId].x > 0) players[myId].x -= moveAmount;
+  if (keys.s && players[myId].y < gridSize - 1) players[myId].y += moveAmount;
+  if (keys.d && players[myId].x < gridSize - 1) players[myId].x += moveAmount;
 
   // Send updated position to the server
   socket.emit('playerMovement', {
@@ -103,26 +88,29 @@ function draw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // Calculate camera offset to center the player
-  const cameraX = players[myId].x - canvas.width / 2;
-  const cameraY = players[myId].y - canvas.height / 2;
+  const cameraX = players[myId].x * squareSize - canvas.width / 2;
+  const cameraY = players[myId].y * squareSize - canvas.height / 2;
+
+  // Draw grid
+  for (let x = 0; x < gridSize; x++) {
+    for (let y = 0; y < gridSize; y++) {
+      const color = (x + y) % 2 === 0 ? '#FFFFFF' : '#CCCCCC'; // Checkered pattern
+      ctx.fillStyle = color;
+      ctx.fillRect(x * squareSize - cameraX, y * squareSize - cameraY, squareSize, squareSize);
+    }
+  }
 
   // Draw players
   Object.values(players).forEach((player) => {
     // Draw player
-    ctx.drawImage(playerImage, player.x - cameraX, player.y - cameraY, 10, 10);
+    ctx.drawImage(playerImage, player.x * squareSize - cameraX, player.y * squareSize - cameraY, squareSize, squareSize);
 
     // Draw health bar
     ctx.fillStyle = 'red';
-    ctx.fillRect(player.x - cameraX, player.y - cameraY - 10, 40, 5);
+    ctx.fillRect(player.x * squareSize - cameraX, player.y * squareSize - cameraY - 10, squareSize, 5);
     ctx.fillStyle = 'lime';
-    ctx.fillRect(player.x - cameraX, player.y - cameraY - 10, (player.health / 100) * 40, 5);
+    ctx.fillRect(player.x * squareSize - cameraX, player.y * squareSize - cameraY - 10, (player.health / 100) * squareSize, 5);
   });
-
-  // Draw weapon
-  if (!weapon.isEquipped) {
-    ctx.fillStyle = 'yellow';
-    ctx.fillRect(weapon.x - cameraX, weapon.y - cameraY, 10, 10);
-  }
 
   // Update coordinates display
   coordinatesDisplay.textContent = `X: ${players[myId].x}, Y: ${players[myId].y}`;
